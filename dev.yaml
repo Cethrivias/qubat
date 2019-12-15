@@ -1,0 +1,13 @@
+databases:
+  main:
+    username: iq3
+    password: jGI4XOGWVdYP60K9akWl
+    host: conform5-dev-01-databasebatchcluster-yqaf1rp1pwe3.cluster-csjdafhsekeb.us-east-1.rds.amazonaws.com
+    port: 3306
+    database: iq3
+  audit:
+    username: audit15
+    password: wzrBYvQx1pL4y3gV
+    host: conform5-dev-01-auroraserverlesscluster-1164wkemjvuj9.cluster-csjdafhsekeb.us-east-1.rds.amazonaws.com
+    port: 3306
+    database: audit15

@@ -1,0 +1,60 @@
+args:
+  area: 1
+  lifecycle: 3
+  study: 6547
+
+databases:
+  main:
+    username: root
+    password: testdbpass
+    host: 127.0.0.1
+    port: 3306
+    database: validator
+  audit:
+    username: root
+    password: testdbpass
+    host: 127.0.0.1
+    port: 3306
+    database: audit
+
+queries:
+  main:
+    - log: Dropping study data staging
+      statement: DROP TABLE IF EXISTS cb_study_data_staging_${lifecycle}_${area}_${study};
+    - log: Dropping study data issues staging
+      statement: DROP TABLE IF EXISTS cb_study_data_issues_staging_${lifecycle}_${area}_${study};
+    - log: Dropping domain issues staging
+      statement: DROP TABLE IF EXISTS cb_domain_issues_staging_${lifecycle}_${area}_${study};
+    - log: Dropping comments staging
+      statement: DROP TABLE IF EXISTS comments_staging_${lifecycle}_${area}_${study};
+    - log: Dropping issues history staging
+      statement: DROP TABLE IF EXISTS issue_history_staging_${lifecycle}_${area}_${study};
+    - log: Dropping issues staging
+      statement: DROP TABLE IF EXISTS issues_staging_${lifecycle}_${area}_${study};
+    - log: Truncating cb_study_data partition
+      statement: ALTER TABLE cb_study_data_${lifecycle}_${area} TRUNCATE PARTITION p${study};
+    - log: Truncating cb_domain_issues partition
+      statement: ALTER TABLE cb_domain_issues_${lifecycle}_${area} TRUNCATE PARTITION p${study};
+    - log: Truncating cb_staging_da partition
+      statement: ALTER TABLE cb_staging_data TRUNCATE PARTITION p${study};
+    - log: Truncating cb_study_data_issues partition
+      statement: ALTER TABLE cb_study_data_issues_${lifecycle}_${area} TRUNCATE PARTITION p${study};
+    - log: Truncating issues partition
+      statement: ALTER TABLE issues_${lifecycle}_${area} TRUNCATE PARTITION p${study};
+    - log: Truncating issue_history partition
+      statement: ALTER TABLE issue_history_${lifecycle}_${area} TRUNCATE PARTITION p${study};
+    - log: Truncating comments partition
+      statement: ALTER TABLE comments_${lifecycle}_${area} TRUNCATE PARTITION p${study};
+    - log: Deleting runs
+      statement: 'DELETE runs, types
+        FROM cb_batch_runs AS runs
+        LEFT JOIN cb_batch_runs_types AS types ON types.cb_batch_run_id = runs.id
+        WHERE runs.study_id = ${study};'
+  audit:
+    - log: Deleting audit
+      statement: 'DELETE FROM audit_${lifecycle}
+        WHERE study_id = ${study} AND area_id = ${area};'
+    - log: Deleting records_trail
+      statement: 'DELETE FROM records_trail_${lifecycle}
+        WHERE study_id = ${study}
+        AND (child_area_id = ${area} OR parent_area_id = ${area});'
