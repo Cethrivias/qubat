@@ -1,23 +1,25 @@
 package db
 
 import config.Database
-import java.sql.Connection
-import java.sql.DriverManager
+import org.apache.commons.dbcp2.BasicDataSource
 
 class Db internal constructor(database: Database) {
-    private var connection: Connection
+    private var connectionPool: BasicDataSource
 
     init {
-        Class.forName("com.mysql.cj.jdbc.Driver").getDeclaredConstructor().newInstance()
-        connection = DriverManager.getConnection(
-            "jdbc:mysql://${database.host}:${database.port}/${database.database}",
-            database.username,
-            database.password
-        )
+        val dbUrl = "jdbc:mysql://${database.host}:${database.port}/${database.database}"
+        connectionPool = BasicDataSource()
+
+        connectionPool.username = database.username
+        connectionPool.password = database.password
+        connectionPool.driverClassName = "com.mysql.cj.jdbc.Driver"
+        connectionPool.url = dbUrl
+        connectionPool.initialSize = 5
+        connectionPool.maxTotal = 20
     }
 
     fun executeUpdate(query: String): Int {
-        return connection.createStatement().executeUpdate(query);
+        return connectionPool.connection.createStatement().executeUpdate(query);
     }
 
     companion object {
