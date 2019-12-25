@@ -2,9 +2,7 @@ package config
 
 import com.sksamuel.hoplite.ConfigLoader
 import logger.LoggerContainer
-import java.nio.file.Path
-import java.util.*
-import java.util.logging.Logger
+import java.nio.file.Paths
 
 data class Query(val log: String?, val statement: String)
 
@@ -50,7 +48,7 @@ class ConfigContainer {
         private fun load(addons: Array<String>): Config {
             val dir = System.getProperty("user.dir")
             val paths = (listOf("qubat") + addons.asList())
-                .map { Path.of(dir, "/$it.yaml") }
+                .map { Paths.get(dir, if (it.endsWith(".yaml")) it else "$it.yaml") }
                 .asReversed()
 
             return ConfigLoader().loadConfigOrThrow(paths)

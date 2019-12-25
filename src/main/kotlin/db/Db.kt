@@ -1,29 +1,30 @@
 package db
 
+import com.zaxxer.hikari.HikariDataSource
 import config.Database
-import org.apache.commons.dbcp2.BasicDataSource
 
 class Db internal constructor(database: Database) {
-    private var connectionPool: BasicDataSource
+    private var connectionPool: HikariDataSource
 
     init {
         val dbUrl = "jdbc:mysql://${database.host}:${database.port}/${database.database}"
-        connectionPool = BasicDataSource()
+        connectionPool = HikariDataSource()
 
         connectionPool.username = database.username
         connectionPool.password = database.password
         connectionPool.driverClassName = "com.mysql.cj.jdbc.Driver"
-        connectionPool.url = dbUrl
-        connectionPool.initialSize = 5
-        connectionPool.maxTotal = 20
+        connectionPool.jdbcUrl = dbUrl
+        connectionPool.minimumIdle = 10
+        connectionPool.maximumPoolSize = 10
     }
 
-    fun executeUpdate(query: String): Int {
-        return connectionPool.connection.createStatement().executeUpdate(query);
+    fun executeUpdate(query: String): Int = connectionPool.connection.use {
+        it.createStatement().executeUpdate(query)
     }
 
     companion object {
-        @Volatile private var instances = HashMap<String, Db>()
+        @Volatile
+        private var instances = HashMap<String, Db>()
 
         fun getInstance(database: Database): Db {
             val hash = "${database.host}${database.port}${database.database}${database.username}"
