@@ -1,10 +1,24 @@
 package config
 
 import com.sksamuel.hoplite.ConfigLoader
-import logger.LoggerContainer
+import enums.QueryStatus
 import java.nio.file.Paths
 
-data class Query(val log: String?, val statement: String)
+data class Query(val log: String, var statement: String, @Volatile var status: QueryStatus = QueryStatus.pending) {
+    fun injectArgs() {
+        val config = ConfigContainer.getConfig()
+
+        "\\\$\\{(\\w+)}".toRegex()
+            .findAll(statement)
+            .map { it.groupValues[0] to it.groupValues[1] }
+            .toMap()
+            .forEach {
+                val value = config.args[it.value] ?: throw Exception("Unknown argument '${it.value}'")
+                statement = statement.replace(it.key, value)
+            }
+    }
+}
+
 
 data class Database(
     val username: String,
@@ -22,7 +36,6 @@ data class Config(
 
 class ConfigContainer {
     companion object {
-        private val log = LoggerContainer.logger
         @Volatile
         private var instance: Config? = null
 
@@ -33,9 +46,6 @@ class ConfigContainer {
             }
 
             return synchronized(this) {
-                if (addons.isNotEmpty()) {
-                    log.info("Loading configs: ${addons.joinToString()}")
-                }
                 if (instance == null) {
                     val created = load(addons)
                     instance = created
