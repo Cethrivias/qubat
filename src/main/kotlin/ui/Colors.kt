@@ -7,5 +7,6 @@ class Colors {
         fun yellow(text: String) = "${Ansi.ESC}[33m$text$default"
         fun green(text: String) = "${Ansi.ESC}[32m$text$default"
         fun white(text: String) = "${Ansi.ESC}[37m$text$default"
+        fun blue(text: String) = "${Ansi.ESC}[94m$text$default"
     }
 }

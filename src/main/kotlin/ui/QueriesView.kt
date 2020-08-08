@@ -1,11 +1,19 @@
 package ui
 
-import queries
+import config.ConfigContainer
 
 class QueriesView {
     private val queriesViews by lazy {
-        queries.map { QueryView(it.value) }
+        ConfigContainer.getConfig().queries.map { db ->
+            db.key to db.value.map { QueryView(it) }
+        }
     }
 
-    fun get() = "Queries\n${queriesViews.joinToString(separator = "\n") { "${Ansi.CLEAR_LINE} - ${it.get()}" }}"
+    fun get() =
+        "Queries\n" +
+            queriesViews.joinToString(separator = "\n") { pair ->
+                " > ${pair.first}:\n" +
+                        pair.second.joinToString(separator = "\n") { "${Ansi.CLEAR_LINE}   - ${it.get()}" }
+            }
+
 }

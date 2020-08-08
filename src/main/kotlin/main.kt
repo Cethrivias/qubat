@@ -4,14 +4,12 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.runBlocking
-import ui.Ansi
 import ui.Picture
 import ui.PictureRefresher
 import java.lang.Thread.sleep
 import kotlin.system.measureTimeMillis
 
 fun main(args: Array<String>) {
-    print(Ansi.SCREEN_BUFFER)
 
     ConfigContainer.init(args)
     val config = ConfigContainer.getConfig()
@@ -44,5 +42,4 @@ fun main(args: Array<String>) {
 
     println("Press Enter to exit")
     readLine()
-    print(Ansi.SCREEN_BUFFER_OUT)
 }

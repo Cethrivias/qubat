@@ -3,6 +3,7 @@ package ui
 import Countdown
 
 class Picture {
+    private var firstDraw = true
     private val queriesView by lazy {
         QueriesView()
     }
@@ -12,13 +13,29 @@ class Picture {
     }
     private val countdown = Countdown
 
+
     fun paint() {
-        print("${Ansi.ESC}[3J${Ansi.ESC}[H")
-        println(argsView.get())
-        println("-".repeat(10))
-        println("Starting in ${Colors.red(countdown.seconds.toString())} seconds")
-        println("-".repeat(10))
-        println(queriesView.get())
-        println("-".repeat(10))
+        var body = argsView.get() + "\n" +
+                "-".repeat(10) + "\n" +
+                "Starting in ${Colors.red(countdown.seconds.toString())} seconds" + "\n" +
+                "-".repeat(10) + "\n" +
+                queriesView.get() + "\n" +
+                "-".repeat(10) + "\n"
+
+        if (!firstDraw) {
+            body = body
+                .split("\n")
+                .let {
+                    Ansi.UP_LINE_START.repeat(it.size - 1) + it.joinToString(
+                        prefix = Ansi.CLEAR_LINE,
+                        separator = "\n${Ansi.CLEAR_LINE}"
+                    )
+                }
+        } else {
+            firstDraw = false
+        }
+
+        print(body)
     }
+
 }
