@@ -4,6 +4,7 @@ import config.Database
 import config.Query
 import db.Db
 import enums.QueryStatus
+import errors
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -22,6 +23,7 @@ class DatabaseQueries(database: Database, private val queries: List<Query>) {
                     it.status = QueryStatus.done
                 } catch (e: Exception) {
                     it.status = QueryStatus.error
+                    errors += e.localizedMessage
                 }
             }
         }.awaitAll()

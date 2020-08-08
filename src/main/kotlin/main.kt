@@ -37,9 +37,10 @@ fun main(args: Array<String>) {
         refresher.stop()
         picture.paint()
 
-        println("Execution time $time ms")
+        println("Queries execution time: $time ms")
     }
 
-    println("Press Enter to exit")
-    readLine()
+    if (errors.size > 0) {
+        println(errors.joinToString(prefix = "\nErrors:\n", separator = "\n") { " - $it" })
+    }
 }

@@ -11,6 +11,7 @@ class Picture {
     private val argsView by lazy {
         ArgsView()
     }
+    private val elapsedTimeView = ElapsedTimeView()
     private val countdown = Countdown
 
 
@@ -20,6 +21,8 @@ class Picture {
                 "Starting in ${Colors.red(countdown.seconds.toString())} seconds" + "\n" +
                 "-".repeat(10) + "\n" +
                 queriesView.get() + "\n" +
+                "-".repeat(10) + "\n" +
+                elapsedTimeView.get() + "\n" +
                 "-".repeat(10) + "\n"
 
         if (!firstDraw) {
